@@ -8,7 +8,7 @@ assignees: ''
 ---
 
 ## User Story
-< details of user story >
+As a **user type** I would like **what the user wants to accomplish** so that **benefit/value to the user**.
 
 ## Acceptance Criteria
 - Criteria 1

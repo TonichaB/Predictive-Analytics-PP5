@@ -1,46 +1,35 @@
-# ![CI logo](https://codeinstitute.s3.amazonaws.com/fullstack/ci_logo_small.png)
+# Property Value Analytics
 
-## Template Instructions
+- Introduction Section
+- Project Image
 
-Welcome,
+View the live project here (link to be added)
 
-This is the Code Institute student template for the Heritage Housing project option in Predictive Analytics. We have preinstalled all of the tools you need to get started. It's perfectly ok to use this template as the basis for your project submissions. Click the `Use this template` button above to get started.
-
-You can safely delete the Template Instructions section of this README.md file,  and modify the remaining paragraphs for your own project. Please do read the Template Instructions at least once, though! It contains some important information about the IDE and the extensions we use.
-
-## How to use this repo
-
-1. Use this template to create your GitHub project repo
-
-2. Log into the cloud-based IDE with your GitHub account.
-
-3. On your Dashboard, click on the Create button
-
-4. Paste in the URL you copied from GitHub earlier
-
-5. Click Create
-
-6. Wait for the workspace to open. This can take a few minutes.
-
-7. Open a new terminal and `pip3 install -r requirements.txt`
-
-11. Open the jupyter_notebooks directory and click on the notebook you want to open.
-
-12. Click the kernel button and choose Python Environments.
-
-Note that the kernel says Python 3.8.18 as it inherits from the workspace so it will be Python-3.8.18 as installed by our template. To confirm this you can use `! python --version` in a notebook code cell.
-
-## Cloud IDE Reminders
-
-To log into the Heroku toolbelt CLI:
-
-1. Log in to your Heroku account and go to *Account Settings* in the menu under your avatar.
-2. Scroll down to the *API Key* and click *Reveal*
-3. Copy the key
-4. In your Cloud IDE, from the terminal, run `heroku_config`
-5. Paste in your API key when asked
-
-You can now use the `heroku` CLI program - try running `heroku apps` to confirm it works. This API key is unique and private to you so do not share it. If you accidentally make it public then you can create a new one with *Regenerate API Key*.
+# Contents Table:
+- [Property Value Analytics](#property-value-analytics)
+- [Contents Table:](#contents-table)
+  - [Dataset Content](#dataset-content)
+  - [Business Requirements](#business-requirements)
+  - [Hypothesis and how to validate?](#hypothesis-and-how-to-validate)
+  - [The rationale to map the business requirements to the Data Visualisations and ML tasks](#the-rationale-to-map-the-business-requirements-to-the-data-visualisations-and-ml-tasks)
+  - [ML Business Case](#ml-business-case)
+  - [User Stories](#user-stories)
+  - [Dashboard Design](#dashboard-design)
+  - [Methodology](#methodology)
+  - [Rationale for the Model](#rationale-for-the-model)
+  - [Project Features](#project-features)
+  - [Project Outcomes](#project-outcomes)
+  - [Hypothesis Outcomes](#hypothesis-outcomes)
+  - [Testing](#testing)
+  - [Deployment](#deployment)
+    - [Heroku](#heroku)
+    - [Fork the Repository](#fork-the-repository)
+    - [Cloning the Repository](#cloning-the-repository)
+  - [Main Data Analysis and Machine Learning Libraries](#main-data-analysis-and-machine-learning-libraries)
+  - [Credits](#credits)
+    - [Content](#content)
+    - [Media](#media)
+  - [Acknowledgements](#acknowledgements)
 
 ## Dataset Content
 
@@ -95,12 +84,40 @@ Although your friend has an excellent understanding of property prices in her ow
 
 * In the previous bullet, you potentially visualised an ML task to answer a business requirement. You should frame the business case using the method we covered in the course.
 
+## User Stories
+
 ## Dashboard Design
+
+- Page 1
+- Page 2
+- Page 3
+- Page 4
+- Page 5
 
 * List all dashboard pages and their content, either blocks of information or widgets, like buttons, checkboxes, images, or any other items that your dashboard library supports.
 * Eventually, during the project development, you may revisit your dashboard plan to update a given feature (for example, at the beginning of the project you were confident you would use a given plot to display an insight but eventually you needed to use another plot type)
 
-## Unfixed Bugs
+## Methodology
+
+- CRISP-DM
+- Agile Methodology
+
+## Rationale for the Model
+
+## Project Features
+
+## Project Outcomes
+
+- Business Requirement 1
+- Business Requirement 2
+
+## Hypothesis Outcomes
+
+- 1
+- 2
+- 3
+
+## Testing
 
 * You will need to mention unfixed bugs and why they were not fixed. This section should include shortcomings of the frameworks or technologies used. Although time can be a big variable to consider, paucity of time and difficulty understanding implementation is not valid reason to leave bugs unfixed.
 
@@ -119,7 +136,14 @@ Although your friend has an excellent understanding of property prices in her ow
 5. The deployment process should happen smoothly if all deployment files are fully functional. Click the button Open App on the top of the page to access your App.
 6. If the slug size is too large then add large files not required for the app to the .slugignore file.
 
+### Fork the Repository
+
+### Cloning the Repository
+
 ## Main Data Analysis and Machine Learning Libraries
+
+- Languages (python)
+- Frameworks, Libraries & Programs used
 
 * Here you should list the libraries you used in the project and provide example(s) of how you used these libraries.
 
@@ -130,17 +154,6 @@ Although your friend has an excellent understanding of property prices in her ow
 
 ### Content
 
-* The text for the Home page was taken from Wikipedia Article A
-* Instructions on how to implement form validation on the Sign-Up page was taken from [Specific YouTube Tutorial](https://www.youtube.com/)
-* The icons in the footer were taken from [Font Awesome](https://fontawesome.com/)
-
 ### Media
 
-* The photos used on the home and sign-up page are from This Open Source site
-* The images used for the gallery page were taken from this other open-source site
-
-## Acknowledgements (optional)
-
-
-* In case you would like to thank the people that provided support through this project.
-
+## Acknowledgements

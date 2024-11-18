@@ -42,8 +42,8 @@ View the live project here (link to be added)
 ## Dataset Content
 
 ### Source
-The datasets used in this project were sourced from [Kaggle](https://www.kaggle.com):
-1. **[House Prices Dataset](https://www.kaggle.com/codeinstitute/housing-prices-data)**: Contains house attribute data (including sale prices) for properties in Ames, Iowa.
+The datasets used in this project were sourced from [Kaggle](https://www.kaggle.com/codeinstitute/housing-prices-data):
+1. **House Prices Dataset**: Contains house attribute data (including sale prices) for properties in Ames, Iowa.
 2. **Inherited Houses Dataset**: Contains data on four inherited properties provided by our fictitious client, including their attributes but excluding sale prices.
 
 ### Licensing
@@ -56,7 +56,7 @@ The data is broken down into two datasets:
 1. **`house_prices_records.csv`**:
    - 1460 rows and 24 columns.
    - Includes house attributes such as square footage, lot size, and sale prices.
-2. **`inherited_properties.csv`**:
+2. **`inherited_houses.csv`**:
    - 4 rows and 23 columns.
    - Shares the same overall structure as `house_prices_records.csv` other than the excluded sale prices column.
 

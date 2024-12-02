@@ -61,7 +61,7 @@ The data is broken down into two datasets:
    - Shares the same overall structure as `house_prices_records.csv` other than the excluded sale prices column.
 
 <details>
-  <summary>Click to view the details feature descriptions</summary>
+  <summary>Click to view the detailed feature descriptions</summary>
 
 |Variable|Meaning|Units|
 |:----|:----|:----|
@@ -104,6 +104,14 @@ The quality of the datasets were inspected within the [Data Collection Notebook]
   - Sale prices are not included, which will require modeling to predict.
 
 The differences in structure and size between the datasets are addressed during the data cleaning and integration steps of the project. Copies of the datasets are saved in the project directory `outputs/datasets/raw` for reproducibility and future reference.
+
+After the data cleaning stage:
+- All missing values were handled using appropriate imputation methods.
+- Variables with high percentages of missing values (e.g., `WoodDeckSF`) were dropped due to their limited contribution to analysis.
+- Duplicate rows and inconsistencies were removed, ensuring data integrity.
+- Data types were standardized for seamless processing.
+
+The cleaned datasets are saved in the `outputs/datasets/processed/cleaned/` directory.
 
 ## Business Requirements
 
@@ -178,17 +186,32 @@ This project follows the CRISP-DM (Cross Industry Standard Process for Data Mini
 
 3. **Data Preparation**:
 
-4. **Modeling**:
+This stage involves preparing the raw datasets for analysis and modeling. The key steps are documented in the [Data Cleaning Notebook](https://github.com/TonichaB/Predictive-Analytics-PP5/blob/main/jupyter_notebooks/02_Data_Cleaning.ipynb):
 
-5. **Evaluation**:
+- **Key Objectives**:
+  1. Handle missing values in the datasets using imputation techniques.
+  2. Remove duplicate rows and address inconsistencies in feature values.
+  3. Standardize formatting and ensure compatibility of data types.
+  4. Split the cleaned dataset into training and testing sets for modeling.
+  5. Save the cleaned and split datasets for future use.
 
-6. **Deployment**:
+- **Outputs**:
+  - Cleaned datasets are saved in `outputs/datasets/processed/cleaned/`.
+  - Training and testing datasets are saved in `outputs/datasets/processed/split/`.
+
+1. **Modeling**:
+
+2. **Evaluation**:
+
+3. **Deployment**:
 
 ### Agile Methodology
 
 ## Rationale for the Model
 
 ## Project Features
+
+- **Data Cleaning and Preparation**: The raw datasets were cleaned, formatted and split into training and testing sets. This ensures the data is ready for exploratory analysis and predictive modeling.
 
 ## Project Outcomes
 

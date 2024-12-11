@@ -1,0 +1,7 @@
+Feature,Correlation
+LogSalePrice,1.0
+num__OverallQual,0.8079457477248909
+num__GrLivArea,0.7235672464018214
+num__GarageArea,0.6545198970705342
+num__1stFlrSF,0.5952080289041305
+num__OverallScore,0.5938685364919908

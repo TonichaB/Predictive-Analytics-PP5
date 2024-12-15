@@ -1,0 +1,2 @@
+1stFlrSF,2ndFlrSF,BedroomAbvGr,BsmtFinSF1,BsmtUnfSF,GarageArea,GarageYrBlt,GrLivArea,LotArea,LotFrontage,MasVnrArea,OpenPorchSF,OverallCond,OverallQual,YearBuilt,YearRemodAdd,TotalBsmtSF,Predicted_LogSalePrice
+856,854,3,706,150,548,2005,1710,8450,65.0,196.0,61,5,7,2003,2003,856,12.002228002866302

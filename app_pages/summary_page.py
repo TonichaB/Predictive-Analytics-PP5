@@ -63,14 +63,18 @@ def app():
     st.write(
         """
         ---
-        The dataset used in this project contains detailed information about house attributes and their respective sale prices. It has been sourced from [Kaggle](https://www.kaggle.com/datasets/codeinstitute/housing-prices-data).
-        Below is a summary of the dataset:
+        This project is based on a dataset originally sourced from [Kaggle](https://www.kaggle.com/datasets/codeinstitute/housing-prices-data), containing detailed information about house attributes and their respective sale prices in Ames, Iowa.
+
+        The dataset underwent extensive preprocessing to ensure it was suitable for modeling and prediction. This involved cleaning, feature engineering, and standardization to procuce the **processed dataset**, which is used for insights and predictive analysis.
+
+        Below is an overview of the processed dataset:
+        
         ---
         """
     )
 
     # Load and Display Dataset Information
-    dataset_path = "outputs/datasets/raw/house_prices_records.csv"
+    dataset_path = "outputs/datasets/processed/final/x_test_final.csv"
     try:
         data = pd.read_csv(dataset_path)
         st.subheader("Dataset Overview")

@@ -14,7 +14,7 @@ def app():
     except Exception as e:
         print(f"Error processing image: {e}")
     
-    st.image(output_path, use_column_width=True)
+    st.image(output_path, use_container_width=True)
 
     # Title
     st.title("Sale Price Predictions")

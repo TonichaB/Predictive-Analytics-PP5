@@ -3,6 +3,8 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from PIL import Image
+import plotly.express as px
+import plotly.graph_objects as go
 
 def app():
     # Convert the image to RGB and save it
@@ -17,7 +19,7 @@ def app():
     except Exception as e:
         print(f"Error processing image: {e}")
     
-    st.image(output_path, use_column_width=True)
+    st.image(output_path, use_container_width=True)
 
     # Title and Description
     st.title("Feature Correlation")
@@ -48,20 +50,66 @@ def app():
         # Calculate correlation matrix
         correlation_matrix = processed_data.corr()
 
-        # Display Heatmap of Correlation Matrix
-        st.subheader("Heatmap of Feature Correlation")
-        st.write("A heatmap showing the correlation between all features and the Sale Price.")
-        fig, ax = plt.subplots(figsize=(10, 8))
-        sns.heatmap(
-            correlation_matrix, annot=True, cmap="coolwarm", fmt=".2f", linewidths=0.5, ax=ax
+        # Toggle between heatmap views
+        heatmap_view = st.radio(
+            "Select Heatmap View",
+            options=["Standard Heatmap", "Customizable Heatmap"],
+            help="Choose between a standard heatmap showing all correlations or a customizable heatmap to view specific features."
         )
-        st.pyplot(fig)
+        # Standard Heatmap
+        if heatmap_view == "Standard Heatmap":
+            st.subheader("Heatmap of Feature Correlation")
+            with st.expander("ℹ️ About this visualisation", expanded=False):
+                st.write(
+                    """
+                    The heatmap provides a visual representation of the correlation between different features and the sale price.
+                    Darker colors represent stronger positive correlations, while lighter colors indicate weaker or negative correlations.
+                    Use this to identify which features contribute most significantly to predicting sale prices.
+                    """
+                )
+            corr_matrix = processed_data.corr()
 
-        # Table of Correlations
-        st.subheader("Correlation Table")
-        st.write("Below is the table displaying correlation values with the target variable (Sale Price):")
-        corr_with_target = correlation_matrix["LogSalePrice"].drop("LogSalePrice").sort_values(ascending=False)
-        st.dataframe(corr_with_target.rename("Correlation with Sale Price"))
+            fig = px.imshow(
+                corr_matrix,
+                color_continuous_scale="Viridis",
+                title="Feature Correlation Heatmap",
+                labels={"color": "Correlation"},
+                x=corr_matrix.columns,
+                y=corr_matrix.columns,
+                zmin=-1,
+                zmax=1,
+                text_auto=".2f",
+            )
+            fig.update_traces(hovertemplate="%{x}<br>%{y}<br>Correlation: %{z:.2f}<extra></extra>")
+            st.plotly_chart(fig, use_container_width=True)
+
+        # Customizable Heatmap
+        elif heatmap_view == "Customizable Heatmap":
+            st.subheader("Customizable Heatmap of Feature Correlations")
+            selected_features = st.multiselect(
+                "Select features to include in the heatmap:",
+                options=processed_data.columns,
+                default=["LogSalePrice", "num__OverallQual", "num__GrLivArea"],
+                help="Choose features to focus on specific correlations."
+            )
+            if len(selected_features) > 1:
+                selected_corr = processed_data[selected_features].corr()
+
+                fig = px.imshow(
+                    selected_corr,
+                    color_continuous_scale="Viridis",
+                    title="Customizable Feature Correlation Heatmap",
+                    labels={"color": "Correlation"},
+                    x=selected_corr.columns,
+                    y=selected_corr.columns,
+                    zmin=-1,
+                    zmax=1,
+                    text_auto=".2f",
+                )
+                fig.update_traces(hovertemplate="%{x}<br>%{y}<br>Correlation: %{z:.2f}<extra></extra>")
+                st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.warning("Please select at least two features to display the heapmap.")
 
         # Top Correlated Features - Bar Chart
         st.subheader("Top Features Correlated with Sale Price")
@@ -105,16 +153,6 @@ def app():
         plt.ylabel("Sale Price")
         st.pyplot(fig)
 
-        # Heatmap for Top Features
-        st.subheader("Heatmap for Top Correlated Features")
-        st.write("Displaying correlations among the top features most correlated with sale price.")
-        top_features = top_corr.index[:8]
-        selected_corr = processed_data[top_features].corr()
-
-        fig, ax = plt.subplots(figsize=(8, 6))
-        sns.heatmap(selected_corr, annot=True, cmap="coolwarm", fmt=".2f", linewidths=0.5, ax=ax)
-        st.pyplot(fig)
-
         # Key Insights
         st.header("Key Insights")
         st.write(
@@ -124,6 +162,19 @@ def app():
             - **Ground Floor Living Area (GrLivArea)** is also strongly correlated, highlighting the importance of usable living space in determining sale price.
             - **1st Floor Surface Area (1stFlrSF)** and the **Overall Score (OverallScore)** further reinforce that larger, high-quality properties command higher prices.
             - **Garage Area (Garage Area)** and **Age of Property (Age)** contribute meaningfully to predicting sale prices.
+
+            Moderate and weaker correlations:
+            - Features like **Masonry Veneer Area (MasVnrArea)**, **Open Porch Size (OpenPorchSF)**, and **Porch Presence (HasPorch)** add moderate value to a property.
+            - **Lot Frontage (LotFrontage)**, **Lot Area size (LotArea), and **Basement Finished Area (BsmtFinSF1)** have weaker but still positive relationships with sale price.
+
+            Features with negative correlations:
+            - **Year of build (YearBuilt)** and **Year Remodel Added (YearRemodAdd)** indicate that older houses, or those in need of remodeling tend to have lower sale prices.
+            - The **Number of Bedrooms Above Ground (BedroomAbvGr)** and **Overall Property Condition (OverallCond)** show limited or weak correlation with sale price.
+
+            ### Summary
+            - **Key Drivers:** Overall quality, living area size, garage area, and ground floor size are the strongest predictors of sale price.
+            - **Negative Impact:** Older houses and houses requiring remodeling tend to reduce in value.
+            - **Moderate Influences:** Porch size, masonry veneer, and lot-related features moderately affect sale prices.
             """
         )
 

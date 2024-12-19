@@ -50,6 +50,9 @@ def app():
         # Calculate correlation matrix
         corr_matrix = processed_data.corr()
 
+        st.markdown("---")
+        st.header("🔥 Feature Correlation Heatmaps")
+
         # Toggle between heatmap views
         heatmap_view = st.radio(
             "Select Heatmap View",
@@ -58,13 +61,21 @@ def app():
         )
         # Standard Heatmap
         if heatmap_view == "Standard Heatmap":
-            st.subheader("Heatmap of Feature Correlation")
+            st.subheader("Standard Heatmap")
             with st.expander("ℹ️ About this visualisation", expanded=False):
                 st.write(
                     """
-                    The heatmap provides a visual representation of the correlation between different features and the sale price.
-                    Darker colors represent stronger positive correlations, while lighter colors indicate weaker or negative correlations.
-                    Use this to identify which features contribute most significantly to predicting sale prices.
+                    **Purpose:**
+                    - The Standard Heatmap provides a comprehensive overview of the correlation between all features in the dataset and the sale price.
+                    - Darker colors represent stronger positive correlations, while lighter colors indicate weaker or negative correlations.
+
+                    **How to Use:**
+                    - Use this visualization to identify patterns between features and determine which attributes are the strongest predictors of sale prices.
+                    - Hover over the cells to view the exact correlation values between pairs of features.
+
+                    **Insights:**
+                    - Identify features with the highest positive correlations (close to +1) and the strongest negative correlations (close to -1) with the sale price.
+                    - Look for any unexpected correlations between features to understand potential multicollinearity issues.
                     """
                 )
 
@@ -78,13 +89,31 @@ def app():
                 zmin=-1,
                 zmax=1,
                 text_auto=".2f",
+                width=1000,
+                height=800
             )
             fig.update_traces(hovertemplate="%{x}<br>%{y}<br>Correlation: %{z:.2f}<extra></extra>")
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, use_container_width=False)
 
         # Customizable Heatmap
         elif heatmap_view == "Customizable Heatmap":
-            st.subheader("Customizable Heatmap of Feature Correlations")
+            st.subheader("Customizable Heatmap")
+            with st.expander("ℹ️ About this visualization", expanded=False):
+                st.write(
+                    """
+                    **Purpose:**
+                    - The customizable heatmap allows you to focus on a subset of features, making it easier to analyze specific relationships in detail.
+                    - It's particularly useful for exploring targeted correlations without being overwhelmed by the full dataset.
+
+                    **How to Use:**
+                    - Select the features you want to analyze from the dropdown menu.
+                    - Adjust your selection to include features you suspect are most relevant to the sale price or other attributes of interest.
+
+                    **Insights:**
+                    - Use this view to isolate the strongest correlations and reduce noise from less relevant features.
+                    - Compare the relationships between a smaller group of attributes to uncover deeper insights.
+                    """
+                )
             selected_features = st.multiselect(
                 "Select features to include in the heatmap:",
                 options=processed_data.columns,
@@ -104,14 +133,34 @@ def app():
                     zmin=-1,
                     zmax=1,
                     text_auto=".2f",
+                    width=1000,
+                    height=800
                 )
                 fig.update_traces(hovertemplate="%{x}<br>%{y}<br>Correlation: %{z:.2f}<extra></extra>")
                 st.plotly_chart(fig, use_container_width=True)
             else:
                 st.warning("Please select at least two features to display the heapmap.")
 
+        st.markdown("---")
+
         # Top Correlated Features - Bar Chart
-        st.subheader("Top Features Correlated with Sale Price")
+        st.subheader("📊 Top Features Correlated with Sale Price")
+        with st.expander("ℹ️ About this visualization", expanded=False):
+                st.write(
+                    """
+                    **Purpose:**
+                    - This bar chart highlights the top features most strongly correlated with house sale prices.
+                    - Positive correlations indicate that higher values for the feature are associated with higher sale prices.
+                    - Negative correlations suggest that higher values for the feature are associated with lower sale prices.
+
+                    **How to Use:**
+                    - Adjust the number of top features to display using the slider.
+                    - Use the sort options to view correlations from strongest to weakest or vice versa.
+
+                    **Insights:**
+                    - Use this chart to quickly identify features with significant influence on sale prices.
+                    """
+                )
         top_n = st.slider("Select number of top features", 5, len(corr_matrix) -1, 11)
         sort_order = st.radio(
             "Sort by:",
@@ -163,10 +212,25 @@ def app():
 
         st.plotly_chart(fig, use_container_width=True)
 
-        # Pair Plot for Top Correlated Features
-        st.subheader("Pair Plot of Top Correlated Features")
-        st.write("Pairwise scatterplots of the top correlated features with sale price.")
+        st.markdown("---")
 
+        # Pair Plot for Top Correlated Features
+        st.subheader("🔗 Pair Plot of Top Correlated Features")
+        with st.expander("ℹ️ About this visualization", expanded=False):
+                st.write(
+                    """
+                    **Purpose:**
+                    - This scatter matrix shows pairwise relationships between the most correlated features and the sale price.
+                    - It helps visualize how features relate to one another and their combined influence on sale prices.
+
+                    **How to Use:**
+                    - Select the number of features to include using the slider.
+                    - Each scatterplot shows the relationship between two features, while histograms show the distribution of individual features.
+
+                    **Insights:**
+                    - Look for trends in the scatterplots to identify linear, exponential, or other relationships.
+                    """
+                )
         num_features = st.slider("Select number of features for Pair Plot", 3, 10, 7)
         pairplot_features = filtered_corr.index.tolist()[:num_features] + ["LogSalePrice"]
 
@@ -192,9 +256,26 @@ def app():
 
         st.plotly_chart(fig)
 
+        st.markdown("---")
+
         # Scatter Plot for Top Positive and Negative Correlations
-        st.subheader("Scatter Plots for Key Features")
-        st.write("Visualizing relationships between selected features and the target variable.")
+        st.subheader("📈 Scatter Plots for Key Features")
+        with st.expander("ℹ️ About this visualization", expanded=False):
+                st.write(
+                    """
+                    **Purpose:**
+                    - These scatter plots visualize the relationship between the top positively and negatively correlated features and sale prices.
+                    - They include regression lines to highlight trends.
+
+                    **How to Use:**
+                    - Use the radio buttons to toggle between the top positively and negatively correlated features.
+                    - Hover over points to see individual data values.
+
+                    **Insights:**
+                    - Positive correlations will show an upward trend, while negative correlations show a downward trend.
+                    - Analyze outliers to understand unusual relationships.
+                    """
+                )
 
         # Identify top positive and negative correlated features separately
         top_positive_feature = corr_matrix["LogSalePrice"].drop("LogSalePrice").idxmax()
@@ -229,8 +310,10 @@ def app():
 
         st.plotly_chart(fig, use_container_width=True)
 
+        st.markdown("---")
+
         # Key Insights
-        st.header("Key Insights")
+        st.header("💡 Key Insights")
         st.write(
             """
             Based on the correlation analysis:

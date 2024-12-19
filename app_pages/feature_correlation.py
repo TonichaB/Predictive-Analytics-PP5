@@ -6,7 +6,7 @@ from PIL import Image
 import plotly.express as px
 import plotly.graph_objects as go
 
-def app():
+def app():    
     # Convert the image to RGB and save it
     image_path = "static/images/feature_corr_banner.png"
     output_path = "static/images/feature_corr_banner_converted.png"
@@ -14,7 +14,7 @@ def app():
     try:
         with Image.open(image_path) as img:
             img = img.convert("RGB")
-            img = img.resize((400, 200))
+            img = img.resize((600, 200))
             img.save(output_path, format="PNG")
     except Exception as e:
         print(f"Error processing image: {e}")
@@ -48,7 +48,7 @@ def app():
         st.dataframe(processed_data.head())
 
         # Calculate correlation matrix
-        correlation_matrix = processed_data.corr()
+        corr_matrix = processed_data.corr()
 
         # Toggle between heatmap views
         heatmap_view = st.radio(
@@ -67,7 +67,6 @@ def app():
                     Use this to identify which features contribute most significantly to predicting sale prices.
                     """
                 )
-            corr_matrix = processed_data.corr()
 
             fig = px.imshow(
                 corr_matrix,
@@ -113,45 +112,122 @@ def app():
 
         # Top Correlated Features - Bar Chart
         st.subheader("Top Features Correlated with Sale Price")
-        top_n = st.slider("Select number of top features", 5, 15, 10)
+        top_n = st.slider("Select number of top features", 5, len(corr_matrix) -1, 11)
+        sort_order = st.radio(
+            "Sort by:",
+            ("Descending (Strongest to Weakest)", "Ascending (Weakest to Strongest)"),
+            index=0,
+        )
 
-        top_corr = corr_with_target.head(top_n)
+        # Sort by absolute correlation values to filter the least correlated features
+        sorted_corr = corr_matrix["LogSalePrice"].drop("LogSalePrice").abs().sort_values(ascending=False)
 
-        fig, ax = plt.subplots(figsize=(8, 6))
-        sns.barplot(x=top_corr.values, y=top_corr.index, palette="viridis", ax=ax)
-        plt.title("Top Features Correlated with Sale Price")
-        plt.xlabel("Correlation with Sale Price")
-        plt.ylabel("Features")
-        st.pyplot(fig)
+        # Select the top N features
+        top_features = sorted_corr.head(top_n).index
+        filtered_corr = corr_matrix["LogSalePrice"].loc[top_features]
+
+        # Sort the filtered features based on user-selected order
+        filtered_corr = filtered_corr.sort_values(ascending=(sort_order == "Ascending (Weakest to Strongest)"))
+
+        # Reverse the order for display
+        filtered_corr = filtered_corr[::-1]
+
+        # Plot the bar chart
+        fig = px.bar(
+            x=filtered_corr.values,
+            y=filtered_corr.index,
+            orientation="h",
+            color=filtered_corr.values,
+            color_continuous_scale="RdBu",
+            title="Top Features Correlated with Sale Price",
+            labels={"x": "Correlation with Sale Price", "y": "Features"},
+            text=filtered_corr.values.round(2),
+        )
+
+        # Adjust layout to improve readability
+        fig.update_layout(
+            height=400 + len(filtered_corr) * 20,
+            margin=dict(l=150),
+            yaxis=dict(
+                tickfont=dict(size=15)
+            ),
+        )
+
+        fig.update_traces(
+            textposition="outside",
+            hovertemplate=(
+                "<b>Feature:</b> %{y}<br>"
+                "<b>Correlation:</b> %{x:.2f}<extra></extra>"
+            ),
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
 
         # Pair Plot for Top Correlated Features
         st.subheader("Pair Plot of Top Correlated Features")
         st.write("Pairwise scatterplots of the top correlated features with sale price.")
-        pairplot_features = ["LogSalePrice"] + top_corr.index.tolist()[:4]
-        fig = sns.pairplot(processed_data[pairplot_features], corner=True, diag_kind="kda")
-        st.pyplot(fig)
+
+        num_features = st.slider("Select number of features for Pair Plot", 3, 10, 7)
+        pairplot_features = filtered_corr.index.tolist()[:num_features] + ["LogSalePrice"]
+
+        fig = px.scatter_matrix(
+            processed_data[pairplot_features],
+            dimensions=pairplot_features,
+            color="LogSalePrice",
+            title="Pair Plot of Top Correlated Features",
+            labels={col: col for col in pairplot_features},
+            color_continuous_scale="Viridis",
+            hover_data=pairplot_features,
+        )
+
+        # Adjust layout to improve readability
+        fig.update_layout(
+            autosize=False,
+            height=1000 + len(pairplot_features) * 50,
+            width=2500,
+            margin=dict(t=50, l=50, r=50, b=50),
+        )
+
+        fig.update_traces(diagonal_visible=False)
+
+        st.plotly_chart(fig)
 
         # Scatter Plot for Top Positive and Negative Correlations
         st.subheader("Scatter Plots for Key Features")
         st.write("Visualizing relationships between selected features and the target variable.")
 
-        # Top positively correlated feature
-        top_positive = top_corr.index[0]
-        fig, ax = plt.subplots()
-        sns.scatterplot(x=processed_data[top_positive], y=processed_data["LogSalePrice"], ax=ax)
-        plt.title(f"Sale Price vs {top_positive}")
-        plt.xlabel(top_positive)
-        plt.ylabel("Sale Price")
-        st.pyplot(fig)
+        # Identify top positive and negative correlated features separately
+        top_positive_feature = corr_matrix["LogSalePrice"].drop("LogSalePrice").idxmax()
+        top_negative_feature = corr_matrix["LogSalePrice"].drop("LogSalePrice").idxmin()
 
-        # Top negatively correlated feature
-        top_negative = top_corr.index[-1]
-        fig, ax = plt.subplots()
-        sns.scatterplot(x=processed_data[top_negative], y=processed_data["LogSalePrice"], ax=ax)
-        plt.title(f"Sale Price vs {top_negative}")
-        plt.xlabel(top_negative)
-        plt.ylabel("Sale Price")
-        st.pyplot(fig)
+        # Choose between scatter plots
+        scatter_options = st.radio(
+            "Select a feature to visualize its relationship with sale prices:",
+            ("Top Positive Correlation", "Top Negative Correlation"),
+        )
+
+        if scatter_options == "Top Positive Correlation":
+            selected_feature = top_positive_feature
+            title = f"Sale Price vs {selected_feature} (Top Positive Correlation)"
+            color_scale = "Blues"
+        elif scatter_options == "Top Negative Correlation":
+            selected_feature = top_negative_feature
+            title = f"Sale Price vs {selected_feature} (Top Negative Correlation)"
+            color_scale = "Reds"
+        
+        fig = px.scatter(
+            processed_data,
+            x=selected_feature,
+            y="LogSalePrice",
+            title=title,
+            labels={selected_feature: selected_feature, "LogSalePrice": "Sale Price"},
+            trendline="ols",
+            color="LogSalePrice",
+            color_continuous_scale=color_scale,
+            hover_data=processed_data.columns,
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
 
         # Key Insights
         st.header("Key Insights")

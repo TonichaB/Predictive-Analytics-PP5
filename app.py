@@ -2,11 +2,11 @@ import streamlit as st
 from app_pages.multi_page import MultiPage
 from app_pages import summary_page, feature_correlation, price_predictions_page, hypothesis_validation, technical_summary
 
+# Configure the page title, icon and layout
+st.set_page_config(page_title="Property Value Analytics Dashboard", page_icon="🏠", layout="wide")
+
 # Set up the app
 app = MultiPage()
-
-# Configure the page title and icon
-st.set_page_config(page_title="Property Value Analytics Dashboard", page_icon="🏠")
 
 # Add app pages
 app.add_page("Sale Price Predictions Summary", summary_page.app)

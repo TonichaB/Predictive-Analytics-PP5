@@ -3,6 +3,7 @@ from PIL import Image
 import pandas as pd
 import plotly.express as px
 import numpy as np
+import joblib
 
 def app():
     # Convert the image to RGB and save it
@@ -115,4 +116,56 @@ def app():
         Use the interactive form below to input house details and generate a predicted sale price:
         """
     )
-    st.write("**Placeholder for inherited widgets and predicted price display**")
+    
+    with st.form(key="custom_prediction_form"):
+        st.subheader("Enter Property Details")
+
+        # Input fields for user to fill in
+        lot_frontage = st.number_input("Lot Frontage (ft)", min_value=0, step=1)
+        lot_area = st.number_input("Lot Area (sqft)", min_value=0, step=1)
+        open_porch_sf = st.number_input("Open Porch Area (sqft)", min_value=0, step=1)
+        mas_vnr_area = st.number_input("Masonry Veneer Area (sqft)", min_value=0, step=1)
+        bsmt_fin_sf1 = st.number_input("Finished Basement Area (sqft)", min_value=0, step=1)
+        total_bsmt_sf = st.number_input("Total Basement Area (sqft)", min_value=0, step=1)
+        year_built = st.number_input("Year Built", min_value=1800, max_value=2025, step=1)
+        gr_liv_area = st.number_input("Above Ground Living Area (sqft)", min_value=0, step=1)
+        year_remod_add = st.number_input("Year Remodeled", min_value=1800, max_value=2025, step=1)
+        overall_qual = st.slider("Overall Quality (/10)", min_value=1, max_value=10, step=1)
+        overall_cond = st.slider("Overall Condition (/10)", min_value=1, max_value=10, step=1)
+        has_porch = st.radio("Has Porch?", options=["Yes", "No"])
+
+        # Submit button
+        submitted = st.form_submit_button("Predict Price!")
+
+        if submitted:
+            # Convert inputs to the format expected by the model
+            inputs = {
+                "LotFrontage": lot_frontage,
+                "LotArea": lot_area,
+                "OpenPorchSF": open_porch_sf,
+                "MasVnrArea": mas_vnr_area,
+                "BsmtFinSF1": bsmt_fin_sf1,
+                "TotalBsmtSF": total_bsmt_sf,
+                "YearBuilt": year_built,
+                "GrLivArea": gr_liv_area,
+                "YearRemodAdd": year_remod_add,
+                "OverallQual": overall_qual,
+                "OverallCond": overall_cond,
+                "HasPorch": 1 if has_porch == "Yes" else 0,
+            }
+
+            # Convert to DataFrame
+            input_df = pd.DataFrame([inputs])
+
+            # Load the saved pipeline
+            pipeline_path = "outputs/pipelines/random_forest_pipeline_general.pkl"
+            try:
+                pipeline = joblib.load(pipeline_path)
+
+                # Predict the sale price
+                predicted_price = pipeline.predict(input_df)[0]
+                st.success(f"The predicted sale price for the entered property is: **£{predicted_price:,.2f}**")
+            except FileNotFoundError:
+                st.error("Prediction pipeline not found. Please ensure the pipeline file exists.")
+            except Exception as e:
+                st.error(f"An error occured during prediction: {e}")

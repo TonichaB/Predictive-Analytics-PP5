@@ -47,9 +47,7 @@ def app():
         - Visualized correlations using heatmaps and scatter plots.
         """
     )
-    st.write("**Placeholder for metrics or findings:**")
-    st.write("**PLaceholder for correlation heatmap and/or scatter plot visualization**")
-
+    
     # Hypothesis 2
     st.subheader("Hypothesis 2: Predictive Model")
     st.write(

@@ -28,29 +28,50 @@ def app():
 
     try:
         # Load predicted prices for inherited houses
-        inherited_prices_path = "outputs/predictions/inherited_predictions.csv"
-        processed_dataset_path = "outputs/datasets/processed/final/inherited_properties_processed.csv"
-
-        inherited_prices = pd.read_csv(inherited_prices_path)
-        processed_dataset = pd.read_csv(processed_dataset_path)
-
-        # Reverse log transformation for all columns in processed dataset
-        reversed_processed_dataset = processed_dataset.apply(np.exp).round(2)
-
-        # Filter for Random Forest model predictions
-        rf_predictions = inherited_prices[inherited_prices["Model"] == "Random Forest"].copy()
-
-        # Reverse the log transformation for predicted prices
-        rf_predictions["PredictedPrice"] = rf_predictions["Actual LogSalePrice"].apply(lambda x: round(np.exp(x), 2))
+        display_ready_path = "outputs/datasets/processed/final/inherited_properties_display_ready.csv"
+        display_ready_dataset = pd.read_csv(display_ready_path)
         
         # Create tabs for each property
-        tabs = st.tabs([f"Property {i + 1}" for i in range(len(rf_predictions))])
+        tabs = st.tabs([f"Property {i + 1}" for i in range(len(display_ready_dataset))])
+
+        # Define attribute units
+        attribute_units = {
+            "LotFrontage": "ft",
+            "LotArea": "sqft",
+            "OpenPorchSF": "sqft",
+            "MasVnrArea": "sqft",
+            "BsmtFinSF1": "sqft",
+            "GrLivArea": "sqft",
+            "1stFlrSF": "sqft",
+            "2ndFlrSF": "sqft",
+            "BsmtUnfSF": "sqft",
+            "GarageArea": "sqft",
+            "GarageYrBlt": None,
+            "YearBuilt": None,
+            "YearRemodAdd": None,
+            "BedroomAbvGr": "bedrooms",
+            "OverallCond": "/10",
+            "OverallQual": "/10",
+            "Age": "years",
+            "LivingLotRatio": ":1",
+            "FinishedBsmtRatio": None,
+            "OverallScore": "/100",
+            "HasPorch": None,
+        }
 
         for i, tab in enumerate(tabs):
             with tab:
                 # Get property attributes
-                property_data = reversed_processed_dataset.iloc[i].to_dict()
-                predicted_price = rf_predictions.iloc[i]["PredictedPrice"]
+                property_data = display_ready_dataset.iloc[i].to_dict()
+                predicted_price = property_data.pop("PredictedPrice")
+                property_id = property_data.pop("Property_ID")
+
+                # Split attributes into 3 columns
+                attributes = list(property_data.items())
+                third = len(attributes) // 3
+                first_third = attributes[:third]
+                second_third = attributes[third:2 * third]
+                final_third = attributes[2 * third:]
 
                 # Display property card
                 st.markdown(f"""
@@ -59,20 +80,26 @@ def app():
                     <p><b>Predicted Sale Price:</b> £{predicted_price:,.2f}</p>
                     <hr>
                     <div style="display: flex; justify-content: space-between;">
-                        <div style="width: 48%;">
-                            {"".join([f"<p><b>{k}</b> {v:,.2f}</p>" for k, v in list(property_data.items())[:len(property_data)//2]])}
+                        <div style="width: 33%;">
+                            {"".join([f"<p><b>{k}:</b> {int(v) if isinstance(v, float) and v.is_integer() else v}"
+                                f"{' ' + attribute_units[k] if attribute_units[k] else ''}</p>" for k, v in first_third])}
                         </div>
-                        <div style="width: 48%;">
-                            {"".join([f"<p><b>{k}:</b> {v:,.2f}</p>" for k, v in list(property_data.items())[:len(property_data)//2:]])}
+                        <div style="width: 33%;">
+                            {"".join([f"<p><b>{k}:</b> {int(v) if isinstance(v, float) and v.is_integer() else v}"
+                                f"{' ' + attribute_units[k] if attribute_units[k] else ''}</p>" for k, v in second_third])}
+                        </div>
+                        <div style="width: 33%;">
+                            {"".join([f"<p><b>{k}:</b> {v * 100:.2f}%" if k == 'FinishedBsmtRatio' else f"<p><b>{k}:</b> {int(v) if isinstance(v, float) and v.is_integer() else v}"
+                                f"{' ' + attribute_units[k] if attribute_units[k] else ''}</p>" for k, v in final_third])}
                         </div>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
         
         # Calculate and display the summed predicted prices
-        total_price = rf_predictions["PredictedPrice"].sum()
+        total_price = display_ready_dataset["PredictedPrice"].sum()
         st.subheader("Summed Sale Price")
-        st.write(f"The total predicted sale price for all 4 properties is **${total_price:,.2f}**.")
+        st.write(f"The total predicted sale price for all 4 properties is **£{total_price:,.2f}**.")
     
     except FileNotFoundError:
         st.error("Inherited house predictions file not found.")
@@ -89,9 +116,3 @@ def app():
         """
     )
     st.write("**Placeholder for inherited widgets and predicted price display**")
-
-    st.markdown("---")
-    
-    # Visualization Placeholder
-    st.subheader("Predictions Visualization")
-    st.write("**Placeholder for predictions bar chart.**")

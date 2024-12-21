@@ -53,7 +53,7 @@ def app():
         The primary goals of this project are:
         - **Understand correlations**: Analyze how various house attributes impact sale prices.
         - **Predict house prices**: Use machine learning models to estimate the sale prices of inherited properties and other houses in Ames, Iowa.
-        - ** Deliver actionable insights**: Provide visualizations and summaries to inform decision-making.
+        - **Deliver actionable insights**: Provide visualizations and summaries to inform decision-making.
         ---
         """
     )

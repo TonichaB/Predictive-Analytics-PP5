@@ -1,8 +1,9 @@
 import pandas as pd
 import numpy as np
 import datetime
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, FunctionTransformer
 import joblib
+from sklearn.pipeline import Pipeline
 
 # Load test features dynamically
 test_features_path = "outputs/datasets/processed/final/x_test_final.csv"
@@ -12,14 +13,11 @@ except FileNotFoundError:
     raise FileNotFoundError(f"Test features file not found at {test_features_path}.")
 
 # Load the scaler used during training
-scaler_path = "outputs/models/scaler.pkl"
+scaler_path = "outputs/models/scaler2.pkl"
 try:
     scaler = joblib.load(scaler_path)
 except FileNotFoundError:
     raise FileNotFoundError(f"Scaler file not found at {scaler_path}")
-
-def preprocess_general_wrapper(X):
-    return preprocess_unseen_data(X)
 
 def preprocess_unseen_data(X):
     """
@@ -31,6 +29,9 @@ def preprocess_unseen_data(X):
     Returns:
         Processed DataFrame ready for prediction
     """
+    print("Input to preprocess_unseen_data:")
+    print(X.head())
+
     # Create a copy of the input data
     processed_data = X.copy()
 
@@ -69,12 +70,37 @@ def preprocess_unseen_data(X):
         inplace=True,
     )
 
+    # Debugging Outputs
+    print("Processed Data Columns:")
+    print(processed_data.columns)
+
+    print("\nTest Features Columns:")
+    print(test_features.columns)
+
     # Reorder columns to match training data
     processed_data = processed_data[test_features.columns]
     assert list(processed_data.columns) == list(test_features.columns), "Column alignment mismatch!"
+    print("Processed data before scaling:")
+    print(processed_data.head())
+    print(processed_data.columns)
 
     # Apply scaling and encoding using the laoded scaler
     numeric_features = [col for col in processed_data.columns if col.startswith("num__")]
-    processed_data[numeric_features] = scaler.fit_transform(processed_data[numeric_features])
+    processed_data[numeric_features] = scaler.transform(processed_data[numeric_features])
+
+    print("Processed data after scaling and encoding:")
+    print(processed_data.head())
 
     return processed_data
+
+# Define a wrapper for the preprocess_unseen_data function
+def preprocess_general_wrapper(X):
+    return preprocess_unseen_data(X)
+
+# Create a preprocessor pipeline using the loaded scaler
+preprocessor = Pipeline(steps=[
+    ("preprocessing_function", FunctionTransformer(preprocess_general_wrapper))
+])
+
+# Fit the preprocessor on test-features
+preprocessor.fit(test_features)

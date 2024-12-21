@@ -4,6 +4,7 @@ import pandas as pd
 import plotly.express as px
 import numpy as np
 import joblib
+import datetime
 
 def app():
     # Convert the image to RGB and save it
@@ -120,19 +121,27 @@ def app():
     with st.form(key="custom_prediction_form"):
         st.subheader("Enter Property Details")
 
+        current_year = datetime.datetime.now().year
+        
         # Input fields for user to fill in
         lot_frontage = st.number_input("Lot Frontage (ft)", min_value=0, step=1)
         lot_area = st.number_input("Lot Area (sqft)", min_value=0, step=1)
-        open_porch_sf = st.number_input("Open Porch Area (sqft)", min_value=0, step=1)
+        open_porch_sf = st.number_input("Open Porch Surface Area (sqft)", min_value=0, step=1)
         mas_vnr_area = st.number_input("Masonry Veneer Area (sqft)", min_value=0, step=1)
-        bsmt_fin_sf1 = st.number_input("Finished Basement Area (sqft)", min_value=0, step=1)
-        total_bsmt_sf = st.number_input("Total Basement Area (sqft)", min_value=0, step=1)
-        year_built = st.number_input("Year Built", min_value=1800, max_value=2025, step=1)
+        bsmt_fin_sf1 = st.number_input("Finished Basement Surface Area (sqft)", min_value=0, step=1)
+        total_bsmt_sf = st.number_input("Total Basement Surface Area (sqft)", min_value=0, step=1)
+        year_built = st.number_input("Year Built", min_value=1800, max_value=current_year, step=1)
         gr_liv_area = st.number_input("Above Ground Living Area (sqft)", min_value=0, step=1)
-        year_remod_add = st.number_input("Year Remodeled", min_value=1800, max_value=2025, step=1)
+        year_remod_add = st.number_input("Year Remodeled", min_value=1800, max_value=current_year, step=1)
         overall_qual = st.slider("Overall Quality (/10)", min_value=1, max_value=10, step=1)
         overall_cond = st.slider("Overall Condition (/10)", min_value=1, max_value=10, step=1)
         has_porch = st.radio("Has Porch?", options=["Yes", "No"])
+        bedroom_abv_gr = st.number_input("Number of Bedrooms", min_value=0, step=1)
+        second_flr_sf = st.number_input("Second Floor Surface Area (sqft)", min_value=0, step=0)
+        bsmt_unf_sf = st.number_input("Unfinished Basement Surface Area (sqft)", min_value=0, step=1)
+        garage_area = st.number_input("Garage Area (sqft)", min_value=0, step=1)
+        garage_yr_built = st.number_input("Year Garage Built", min_value=1800, max_value=current_year)
+        first_flr_sf = st.number_input("First Floor Surface Area (sqft)", min_value=0, step=1)
 
         # Submit button
         submitted = st.form_submit_button("Predict Price!")
@@ -152,6 +161,12 @@ def app():
                 "OverallQual": overall_qual,
                 "OverallCond": overall_cond,
                 "HasPorch": 1 if has_porch == "Yes" else 0,
+                "BedroomAbvGr": bedroom_abv_gr,
+                "2ndFlrSF": second_flr_sf,
+                "BsmtUnfSF": second_flr_sf,
+                "GarageArea": garage_area,
+                "GarageYrBlt": garage_yr_built,
+                "1stFlrSF": first_flr_sf,
             }
 
             # Convert to DataFrame
@@ -163,7 +178,8 @@ def app():
                 pipeline = joblib.load(pipeline_path)
 
                 # Predict the sale price
-                predicted_price = pipeline.predict(input_df)[0]
+                log_predicted_price = pipeline.predict(input_df)[0]
+                predicted_price = np.expm1(log_predicted_price)
                 st.success(f"The predicted sale price for the entered property is: **£{predicted_price:,.2f}**")
             except FileNotFoundError:
                 st.error("Prediction pipeline not found. Please ensure the pipeline file exists.")

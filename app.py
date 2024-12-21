@@ -1,6 +1,7 @@
 import streamlit as st
 from app_pages.multi_page import MultiPage
 from app_pages import summary_page, feature_correlation, price_predictions_page, hypothesis_validation, technical_summary
+from preprocessing_utils import preprocess_general_wrapper
 
 # Configure the page title, icon and layout
 st.set_page_config(page_title="Property Value Analytics Dashboard", page_icon="🏠", layout="wide")
